@@ -44,7 +44,7 @@
          (line (elt data 0))
          (text (elt data 2))
          (msg (concat filename ":" line ": " text)))
-    (message "%s" msg)))
+    (message "%s" (ansi-yellow msg))))
 
 (defun x-org-lint--file (file)
   "Run `org-lint' on FILE."
@@ -63,8 +63,13 @@
   "Run org-lint on ARGS."
   (message "")
   (if-let* ((files (mapcar #'expand-file-name args))
-            (files (cl-remove-if-not #'file-exists-p files)))
-      (mapcar #'x-org-lint--file files)
+            (files (cl-remove-if-not #'file-exists-p files))
+            (len (length files)))
+      (progn
+        (mapcar #'x-org-lint--file files)
+        (message "")
+        (message "%s" (ansi-cyan (format "(Total of %s file%s linted)"
+                                         len (if (<= len 1) "" "s")))))
     (message (ansi-cyan "(No file linted)"))))
 
 (provide 'x-org-lint)
